@@ -18,6 +18,7 @@ namespace PruebaTecnicaInversionesAliadas.Models
 
         public virtual DbSet<Cargo> Cargos { get; set; } = null!;
         public virtual DbSet<Empleado> Empleados { get; set; } = null!;
+        public  DbSet<Usuario> Usuarios { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -60,6 +61,19 @@ namespace PruebaTecnicaInversionesAliadas.Models
                     .WithMany(p => p.Empleados)
                     .HasForeignKey(d => d.IdCargo)
                     .HasConstraintName("FK_Cargo_Idcargo");
+            });
+
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.HasKey(e => e.IdUsuario);
+                entity.Property(e => e.IdUsuario)
+                    .UseIdentityColumn()
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.NombreCompleto).HasMaxLength(50);
+                entity.Property(e => e.Correo).HasMaxLength(50);
+                entity.Property(e => e.Clave).HasMaxLength(8);
+
             });
 
             OnModelCreatingPartial(modelBuilder);

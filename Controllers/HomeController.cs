@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PruebaTecnicaInversionesAliadas.Models;
 using PruebaTecnicaInversionesAliadas.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PruebaTecnicaInversionesAliadas.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly crudbasico1Context _DBcontext;
@@ -80,8 +84,13 @@ namespace PruebaTecnicaInversionesAliadas.Controllers
            
             return RedirectToAction("Index", "Home");
         }
-            
 
+        public async Task<IActionResult> Salir()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Login", "Acceso");
+        }
 
         public IActionResult Privacy()
         {
