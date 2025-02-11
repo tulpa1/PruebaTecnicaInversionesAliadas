@@ -1,22 +1,87 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PruebaTecnicaInversionesAliadas.Models;
+using PruebaTecnicaInversionesAliadas.ViewModel;
 
 namespace PruebaTecnicaInversionesAliadas.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly crudbasico1Context _DBcontext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(crudbasico1Context context)
         {
-            _logger = logger;
+            _DBcontext = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            List<Empleado> lista = _DBcontext.Empleados.Include(c => c.oCargo).ToList();
+
+            return View(lista);
         }
+
+        [HttpGet]
+        public IActionResult Empleado_Detalle(int idEmpleado)
+        {
+            EmpleadoVM oEmpleadoVM = new EmpleadoVM()
+            {
+                oEmpleado = new Empleado(),
+                oListaCargo = _DBcontext.Cargos.Select(cargo => new SelectListItem()
+                {
+                    Text = cargo.Descripcion,
+                    Value = cargo.IdCargo.ToString()
+                }).ToList()
+            };
+
+            if(idEmpleado != 0)
+            {
+                oEmpleadoVM.oEmpleado = _DBcontext.Empleados.Find(idEmpleado);
+            }
+
+            return View(oEmpleadoVM);
+
+        }
+
+        [HttpPost]
+        public IActionResult Empleado_Detalle(EmpleadoVM empleadoVM)
+        {
+            if(empleadoVM.oEmpleado.IdEmpleado == 0)
+            {
+                _DBcontext.Empleados.Add(empleadoVM.oEmpleado);
+            }
+            else
+            {
+                _DBcontext.Empleados.Update(empleadoVM.oEmpleado);
+            }
+
+            _DBcontext.SaveChanges();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        
+        public IActionResult Eliminar_Empleado(int idempleado)
+        {
+
+            if(idempleado != 0)
+            { 
+                Empleado? modelo = _DBcontext.Empleados.
+                                    Where(x => x.IdEmpleado == idempleado).FirstOrDefault();
+                
+                if(modelo != null)
+                {
+                    _DBcontext.Empleados.Remove(modelo);
+                    _DBcontext.SaveChanges();
+                }
+            }
+           
+            return RedirectToAction("Index", "Home");
+        }
+            
+
 
         public IActionResult Privacy()
         {

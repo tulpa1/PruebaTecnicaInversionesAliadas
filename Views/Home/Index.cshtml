@@ -1,8 +1,49 @@
-﻿@{
+﻿@model List<PruebaTecnicaInversionesAliadas.Models.Empleado>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Lista de Empleados</h5>
+    </div>
+
+    <div class="card-body">
+        <a class="btn btn-success" asp-controller="Home" asp-action="Empleado_Detalle">Nuevo</a>
+    </div>
+
+    <hr />
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre Empleado</th>
+                <th>Correo</th>
+                <th>Telefono</th>
+                <th>Cargo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model){
+                <tr>
+                
+                    <td>@item.NombreCompleto</td>
+                    <td>@item.Correo</td>
+                    <td>@item.Telefono</td>
+                    <td>@item.oCargo.Descripcion</td>
+                    <td>
+                        <a class="btn btn-primary" asp-controller="Home" asp-action="Empleado_Detalle" asp-route-idempleado="@item.IdEmpleado">Modificar</a>
+                        <a class="btn btn-danger" asp-controller="Home" asp-action="Eliminar_Empleado" asp-route-idempleado="@item.IdEmpleado">Eliminar</a>
+                    </td>
+                </tr>
+                }
+        </tbody>
+    </table>
 </div>
